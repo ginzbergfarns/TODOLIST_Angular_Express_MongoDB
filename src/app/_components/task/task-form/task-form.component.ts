@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {AuthService} from "../../../_providers/auth.service";
 import {TaskService} from "../../../_providers/task.service";
 
 @Component({
@@ -8,15 +7,19 @@ import {TaskService} from "../../../_providers/task.service";
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.scss']
 })
-export class TaskFormComponent implements OnInit {
+export class TaskFormComponent implements OnInit, OnDestroy {
 
   taskForm: FormGroup;
   minDateValue = new Date();
+  currentTask;
+  updateTaskCycle = false;
 
   constructor(private taskP: TaskService) { }
 
   ngOnInit() {
     this.formInit();
+    this.updateTaskCycle = false;
+    this.changeEventSubscription();
   }
 
   formInit() {
@@ -27,10 +30,40 @@ export class TaskFormComponent implements OnInit {
         category: new FormControl('', Validators.required),
         priority: new FormControl(50)
     });
-
   }
+
+  changeEventSubscription() {
+      this.taskP.taskChangeEvent.subscribe(task => {
+         this.updateTaskCycle = true;
+         this.currentTask = task;
+         this.taskForm.setValue({
+             title: task.title,
+             date: task.deadline,
+             description: task.description,
+             category: task.category,
+             priority: task.priority
+         });
+      });
+  }
+
   onSubmit() {
-    this.taskP.insertTask(this.taskForm.value);
+      if (this.updateTaskCycle) {
+          const task = this.taskForm.value;
+          task.failed = this.currentTask.failed;
+          task.done = this.currentTask.done;
+          task._id = this.currentTask._id;
+          this.taskP.updateTask(task).subscribe((eventTask) => {
+              console.log(eventTask);
+              this.taskP.taskUpdateEvent.next(eventTask);
+          });
+      } else {
+          this.taskP.insertTask(this.taskForm.value).subscribe((result) => {
+              this.taskForm.reset();
+          });
+      }
   }
 
+  ngOnDestroy() {
+      this.taskForm.reset();
+  }
 }

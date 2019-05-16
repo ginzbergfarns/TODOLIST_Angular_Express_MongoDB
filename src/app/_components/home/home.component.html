@@ -13,18 +13,18 @@
       <h2 class="mat-typography">Add New Task</h2>
       <mat-icon aria-label="Close menu" (click)="drawer.toggle()">close</mat-icon>
     </div>
-    <app-task-form></app-task-form>
+    <app-task-form *ngIf="drawer.opened"></app-task-form>
   </mat-drawer>
 
   <div class="container">
     <div class="tasks-list" *ngIf="tasks">
-      <div class="priority-task" *ngIf="tasks.priorityTasks">
+      <div class="priority-task" *ngIf="tasks.priorityTasks.length > 0">
         <h3 class="priority-task__title">Priority task</h3>
         <div class="priority-task__wrapper"  cdkDropList (cdkDropListDropped)="drop($event)">
           <app-task cdkDrag *ngFor="let task of tasks.priorityTasks" [taskData]="task"></app-task>
         </div>
       </div>
-      <div class="common-task" *ngIf="tasks.lowPriorityTasks">
+      <div class="common-task">
         <div class="common-task__title">
           <h3>Common task</h3>
           <mat-form-field>
@@ -36,9 +36,14 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="priority-task__wrapper" cdkDropList>
-          <app-task cdkDrag *ngFor="let task of tasks.lowPriorityTasks" [taskData]="task"></app-task>
-        </div>
+        <ng-container *ngIf="tasks.lowPriorityTasks.length > 0; else emptyTask">
+          <div class="priority-task__wrapper" cdkDropList>
+            <app-task cdkDrag *ngFor="let task of tasks.lowPriorityTasks" [taskData]="task"></app-task>
+          </div>
+        </ng-container>
+        <ng-template class="priority-task__wrapper" #emptyTask>
+          <h2>Tasks not found</h2>
+        </ng-template>
       </div>
     </div>
   </div>

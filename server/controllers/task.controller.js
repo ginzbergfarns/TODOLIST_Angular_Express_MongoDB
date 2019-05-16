@@ -1,11 +1,11 @@
 const Task = require('../models/task.models');
 
 exports.getAllTask = (req, res, next) => {
-  Task.fetchAll()
+  Task.fetchAll(req.user._id)
     .then(tasks => {
       const tasksObject = {};
-      tasksObject.priorityTasks = tasks.length > 0 ? tasks.map(task => task.priority >= 70) : [];
-      tasksObject.lowPriorityTasks = tasks.length > 0 ? tasks.map(task => task.priority < 70): [];
+      tasksObject.priorityTasks = tasks.length > 0 ? tasks.filter(task => {return task.priority >= 70}) : [];
+      tasksObject.lowPriorityTasks = tasks.length > 0 ? tasks.filter(task => {return task.priority < 70}): [];
       res.send(tasksObject);
     })
     .catch(err => {
@@ -16,7 +16,7 @@ exports.getAllTask = (req, res, next) => {
 exports.updateTask = (req, res, next) => {
   const task = new Task(
     req.body.title,
-    req.body.date,
+    req.body.deadline,
     req.body.category,
     req.body.description,
     req.body.priority,
@@ -27,11 +27,22 @@ exports.updateTask = (req, res, next) => {
   );
   task.update()
     .then(() => {
-      req.send({message: 'Success'})
+      res.send({message: 'Success'})
     })
     .catch(err => {
-      req.status(300).send(err);
+        console.log(err);
+      res.status(300).send(err);
     })
+};
+
+exports.filterByCategory = (req, res, next) => {
+  Task.filter(req.user._id, req.body.category)
+      .then(tasks => {
+          res.send(tasks);
+      })
+      .catch(err => {
+          console.log(err);
+      })
 };
 
 exports.addTask = (req, res, next) => {
@@ -47,19 +58,20 @@ exports.addTask = (req, res, next) => {
   );
   task.save()
     .then((task) => {
-      req.send(task.ops[0])
+      res.send(task.ops[0])
     })
     .catch(err => {
-      req.status(300).send(err);
+      console.log(err);
+      res.status(300).send(err);
     })
 };
 
 exports.deleteTask = (req, res, next) => {
   Task.deleteById(req.params.taskId)
     .then(() => {
-      req.send({message: 'Success'})
+      res.send({message: 'Success'})
     })
     .catch(err => {
-      req.status(300).send(err);
+      res.status(300).send(err);
     })
 };

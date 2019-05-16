@@ -39,6 +39,7 @@ class User {
     const db = dbUtil.getDb();
     return db.collection('users').findOne({_id: new ObjectId(id)})
   }
+
 }
 
 module.exports = User;

@@ -12,6 +12,8 @@ export class TaskService {
 
   taskAddedEvent = new EventEmitter<any>();
   taskDeletedEvent = new EventEmitter<any>();
+  taskChangeEvent = new EventEmitter<any>();
+  taskUpdateEvent = new EventEmitter<any>();
 
   constructor(private http: HttpClient,
               private authP: AuthService) { }
@@ -27,6 +29,10 @@ export class TaskService {
         this.taskAddedEvent.next(savedTask);
       }
     ));
+  }
+
+  filterByCategory(tCategory) {
+    return this.http.post(this.url + 'filter-by-category', {category: tCategory});
   }
 
   updateTask(task) {

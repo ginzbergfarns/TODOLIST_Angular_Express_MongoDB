@@ -23,16 +23,34 @@ export class TaskComponent implements OnInit {
   }
 
   markAsFailed() {
-    this.failed = true;
+    if (!this.taskData.done && !this.failed) {
+      this.taskData.failed = true;
+      this.failed = true;
+      this.update();
+    }
   }
 
   markAsDone() {
-    this.done = true;
-    console.log(this.done);
+    this.taskData.deadline = 0;
+    this.taskData.done = true;
+    this.update();
+  }
+
+  update() {
+    this.taskP.updateTask(this.taskData).subscribe((result) => {
+      console.log(result);
+    });
+  }
+
+  changeTask(task) {
+    this.taskP.taskChangeEvent.next(task);
   }
 
   delete() {
     this.deleted = true;
+    this.taskP.deleteById(this.taskData._id).subscribe((result) => {
+      console.log(result);
+    });
   }
 
 }

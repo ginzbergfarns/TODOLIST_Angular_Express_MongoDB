@@ -1,28 +1,29 @@
-<mat-card class="card" [ngClass]="{'-fail': failed, '-done': done, '-deleted': deleted}">
+<mat-card class="card" [ngClass]="{'-fail': taskData.failed, '-done': taskData.done, '-deleted': deleted}">
   <div class="card__backdrop"></div>
   <div class="card__line"></div>
   <mat-icon class="card__done-icon"  aria-label="Done">done</mat-icon>
   <mat-icon class="card__fail-icon"  aria-label="Fail">close</mat-icon>
   <div class="card__title">
     <mat-card-title>
-      Task title
+      {{taskData.title}}
     </mat-card-title>
     <mat-card-subtitle>
-      Task Category
+      {{taskData.category}}
     </mat-card-subtitle>
   </div>
   <mat-card-content  class="card__description">
-    Task long description
-    <span class="card__date">Deadline:</span>
+    {{taskData.description}}
+    <span class="card__date">Deadline: <countdown-timer (zeroTrigger)="markAsFailed()" [end]="taskData.deadline"></countdown-timer></span>
   </mat-card-content >
   <mat-card-actions class="card__buttons">
-    <button mat-icon-button (click)="markAsDone()">
+    <button mat-icon-button class="card__done-btn" (click)="changeTask(taskData)">
+      <mat-icon aria-label="Mark as done">edit</mat-icon>
+    </button>
+    <button mat-icon-button class="card__done-btn" (click)="markAsDone()">
       <mat-icon aria-label="Mark as done">done</mat-icon>
     </button>
-    <button mat-icon-button (click)="delete()">
+    <button mat-icon-button class="card__fail-btn" (click)="delete()">
       <mat-icon aria-label="Delete">delete</mat-icon>
     </button>
   </mat-card-actions>
 </mat-card>
-
-<!--<countdown-timer (zeroTrigger)="markAsFailed()" [end]="date"></countdown-timer>-->
