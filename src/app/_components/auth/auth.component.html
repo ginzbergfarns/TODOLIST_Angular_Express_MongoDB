@@ -1,0 +1,12 @@
+<div class="container -sm -vertical-center">
+  <mat-card>
+    <mat-tab-group>
+      <mat-tab label="Log In">
+        <app-auth-form [formType]="'login'"></app-auth-form>
+      </mat-tab>
+      <mat-tab label="Sign In">
+        <app-auth-form [formType]="'register'"></app-auth-form>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>

@@ -1,0 +1,148 @@
+
+.card {
+  $this: &;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  margin-bottom: 2rem;
+  transition: 500ms;
+  animation-fill-mode: forwards;
+
+  &.-deleted {
+    animation: deletion  2s forwards ease-in-out;
+  }
+
+  &__backdrop {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(black, 0.45);
+    border-radius: 8px;
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    transition: 400ms;
+    visibility: hidden;
+
+    #{$this}.-done &,
+    #{$this}.-fail &{
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  &__line {
+    position: absolute;
+    width: 0;
+    height: 2px;
+    z-index: 2;
+    left: 0;
+    top: calc(50% - 1.5px);
+    transition: 600ms;
+    transition-delay: 300ms;
+    visibility: hidden;
+
+    #{$this}.-done & {
+      background-color: lightgreen;
+      visibility: visible;
+      width: 100%;
+    }
+
+    #{$this}.-fail & {
+      background-color: red;
+      visibility: visible;
+      width: 100%;
+    }
+  }
+
+  &__done-icon {
+    position: absolute;
+    color: lightgreen;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: 400ms;
+    font-size: 5rem;
+    width: 5rem;
+    height: 5rem;
+    background: white;
+    border-radius: 50%;
+    transition-delay: 700ms;
+    opacity: 0;
+    z-index: 3;
+    visibility: hidden;
+
+
+    #{$this}.-done & {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  &__fail-icon {
+    position: absolute;
+    color: red;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: 400ms;
+    font-size: 5rem;
+    width: 5rem;
+    height: 5rem;
+    background: white;
+    border-radius: 50%;
+    transition-delay: 700ms;
+    opacity: 0;
+    z-index: 3;
+    visibility: hidden;
+
+
+    #{$this}.-fail & {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  &__title {
+    margin-right: 5rem;
+  }
+
+  &__description {
+    flex: 1 1 auto;
+  }
+
+  &__date {
+    margin-top: 0.5rem !important;
+    padding: 0.3rem;
+    width: max-content;
+    display: block;
+    border: 1px solid lightblue;
+    border-radius: 2rem;
+  }
+
+  &__buttons {
+    padding: 0;
+    margin-right: 1rem;
+    margin-bottom: 1rem !important;
+  }
+}
+
+@keyframes deletion{
+  from {
+    transform: translate(0);
+    opacity: 1;
+  }
+  30% {
+    transform: translateY(-2rem);
+  }
+  90% {
+    transform: translateX(300rem);
+    opacity: 0;
+  }
+  100% {
+    display: none;
+  }
+
+}

@@ -1,0 +1,40 @@
+<form class="form" (ngSubmit)="onSubmit()" [formGroup]="taskForm">
+  <div class="form__wrapper">
+
+    <mat-form-field>
+      <input matInput placeholder="Task title" formControlName="title" required>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <input matInput [owlDateTime]="dt" [owlDateTimeTrigger]="dt" [min]="minDateValue" formControlName="date" placeholder="Choose a deadline" required>
+      <owl-date-time #dt></owl-date-time>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-select placeholder="Choose category" formControlName="category" required>
+        <mat-option>-- None --</mat-option>
+        <mat-option value="family">Family</mat-option>
+        <mat-option value="work">Work</mat-option>
+        <mat-option value="pets">Pets</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <textarea matInput placeholder="Task description" formControlName="description"> </textarea>
+    </mat-form-field>
+
+    <div class="priority-field">
+      <span>Set task priority</span>
+      <mat-slider
+        class="priority-field__input"
+        [max]="100"
+        [min]="0"
+        [step]="1"
+        color="warn"
+        formControlName="priority"
+      >
+      </mat-slider>
+    </div>
+    <button [disabled]='!taskForm.valid' mat-raised-button color="primary">ADD</button>
+  </div>
+</form>

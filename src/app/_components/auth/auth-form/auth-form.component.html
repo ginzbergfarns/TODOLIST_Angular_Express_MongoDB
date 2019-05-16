@@ -1,0 +1,17 @@
+<p style="color: red; margin-bottom: -1.4rem; text-align: center">{{errorMessage}}</p>
+<form [formGroup]="authForm" class="form" (ngSubmit)="onSubmit()">
+  <mat-form-field *ngIf="formType === 'register'">
+    <input matInput placeholder="Your name" formControlName="userName">
+  </mat-form-field>
+  <mat-form-field *ngIf="formType === 'register'">
+    <input matInput placeholder="Your surname" formControlName="userSurname">
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Email" formControlName="userEmail">
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Password" type="password" formControlName="userPassword">
+  </mat-form-field>
+  <mat-checkbox *ngIf="formType === 'login'" color="primary" formControlName="remember">Remember me!</mat-checkbox>
+  <button mat-button [disabled]="!this.authForm.valid" color="primary">Submit</button>
+</form>
