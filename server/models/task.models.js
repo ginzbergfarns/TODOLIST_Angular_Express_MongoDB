@@ -35,16 +35,16 @@ class Task {
   static fetchAll(userId) {
     const db = dbUtil.getDb();
     return db.collection('tasks').find({userId: userId})
-      .sort({priority: 1})
+      .sort({priority: -1})
       .toArray();
   }
 
   static filter(targetUserId, targetCategory) {
     const db = dbUtil.getDb();
     if (targetCategory === undefined) {
-      return db.collection('tasks').find({userId: targetUserId, priority: {$lt: 70}}).toArray();
+      return db.collection('tasks').find({userId: targetUserId}).toArray();
     } else {
-      return db.collection('tasks').find({category: targetCategory, userId: targetUserId, priority: {$lt: 70}}).toArray();
+      return db.collection('tasks').find({category: targetCategory, userId: targetUserId}).toArray();
     }
   }
 }

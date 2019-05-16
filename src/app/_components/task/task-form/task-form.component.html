@@ -1,3 +1,4 @@
+<h2 class="mat-typography title">{{currentTask ? 'Edit' : 'Add new'}} Task</h2>
 <form class="form" (ngSubmit)="onSubmit()" [formGroup]="taskForm">
   <div class="form__wrapper">
 
@@ -6,7 +7,7 @@
     </mat-form-field>
 
     <mat-form-field class="example-full-width">
-      <input matInput [owlDateTime]="dt" [owlDateTimeTrigger]="dt" [min]="minDateValue" formControlName="date" placeholder="Choose a deadline" required>
+      <input matInput [owlDateTime]="dt" [owlDateTimeTrigger]="dt" [min]="minDateValue" formControlName="deadline" placeholder="Choose a deadline" required>
       <owl-date-time #dt></owl-date-time>
     </mat-form-field>
 

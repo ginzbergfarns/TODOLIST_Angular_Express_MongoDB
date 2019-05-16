@@ -3,10 +3,7 @@ const Task = require('../models/task.models');
 exports.getAllTask = (req, res, next) => {
   Task.fetchAll(req.user._id)
     .then(tasks => {
-      const tasksObject = {};
-      tasksObject.priorityTasks = tasks.length > 0 ? tasks.filter(task => {return task.priority >= 70}) : [];
-      tasksObject.lowPriorityTasks = tasks.length > 0 ? tasks.filter(task => {return task.priority < 70}): [];
-      res.send(tasksObject);
+      res.send(tasks.length > 0 ? tasks : []);
     })
     .catch(err => {
       res.send(500).send(err)
@@ -36,19 +33,24 @@ exports.updateTask = (req, res, next) => {
 };
 
 exports.filterByCategory = (req, res, next) => {
-  Task.filter(req.user._id, req.body.category)
+  if (req.body.category) {
+    Task.filter(req.user._id, req.body.category)
       .then(tasks => {
-          res.send(tasks);
+        res.send(tasks);
       })
       .catch(err => {
-          console.log(err);
+        console.log(err);
       })
+  } else {
+    res.redirect(`/api/${req.user._id}/get`)
+  }
+
 };
 
 exports.addTask = (req, res, next) => {
   const task = new Task(
     req.body.title,
-    req.body.date,
+    req.body.deadline,
     req.body.category,
     req.body.description,
     req.body.priority,

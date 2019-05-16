@@ -8,11 +8,9 @@ import {TaskService} from "../../_providers/task.service";
 })
 export class TaskComponent implements OnInit {
 
-  date = new Date();
   failed = false;
   done = false;
   deleted = false;
-  tasks;
 
   @Input() taskData;
   constructor(private taskP: TaskService) { }
@@ -38,18 +36,16 @@ export class TaskComponent implements OnInit {
 
   update() {
     this.taskP.updateTask(this.taskData).subscribe((result) => {
-      console.log(result);
     });
   }
 
   changeTask(task) {
-    this.taskP.taskChangeEvent.next(task);
+    this.taskP.formEditEvent.next(task);
   }
 
   delete() {
-    this.deleted = true;
     this.taskP.deleteById(this.taskData._id).subscribe((result) => {
-      console.log(result);
+      this.deleted = true;
     });
   }
 

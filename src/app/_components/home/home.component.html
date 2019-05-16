@@ -3,42 +3,43 @@
   <mat-toolbar color="primary">
     <span>{{userName}}, it`s time to add new task</span>
     <span class="spacer"></span>
+    <mat-form-field color="primary" class="select">
+      <mat-select placeholder="Choose category" (selectionChange)="categoryChange($event.value)">
+        <mat-option>-- None --</mat-option>
+        <mat-option value="family">Family</mat-option>
+        <mat-option value="work">Work</mat-option>
+        <mat-option value="pets">Pets</mat-option>
+      </mat-select>
+    </mat-form-field>
     <button mat-icon-button>
       <mat-icon aria-label="Add item" (click)="drawer.toggle()">add</mat-icon>
     </button>
   </mat-toolbar>
 
   <mat-drawer #drawer class="sidenav" position="end" mode="over">
-    <div class="sidenav__title">
-      <h2 class="mat-typography">Add New Task</h2>
-      <mat-icon aria-label="Close menu" (click)="drawer.toggle()">close</mat-icon>
-    </div>
-    <app-task-form *ngIf="drawer.opened"></app-task-form>
+    <mat-icon aria-label="Close menu" class="sidenav__close-btn" (click)="drawer.toggle()">close</mat-icon>
+    <app-task-form [sideNav]="drawer"></app-task-form>
   </mat-drawer>
 
   <div class="container">
     <div class="tasks-list" *ngIf="tasks">
-      <div class="priority-task" *ngIf="tasks.priorityTasks.length > 0">
+      <div class="priority-task" *ngIf="tasks.length > 0 && tasks[0].priority >= 70">
         <h3 class="priority-task__title">Priority task</h3>
-        <div class="priority-task__wrapper"  cdkDropList (cdkDropListDropped)="drop($event)">
-          <app-task cdkDrag *ngFor="let task of tasks.priorityTasks" [taskData]="task"></app-task>
+        <div class="priority-task__wrapper">
+          <ng-container *ngFor="let task of tasks">
+            <app-task *ngIf="task.priority >= 70" [taskData]="task"></app-task>
+          </ng-container>
         </div>
       </div>
       <div class="common-task">
         <div class="common-task__title">
           <h3>Common task</h3>
-          <mat-form-field>
-            <mat-select placeholder="Choose category" (selectionChange)="categoryChange($event.value)">
-              <mat-option>-- None --</mat-option>
-              <mat-option value="family">Family</mat-option>
-              <mat-option value="work">Work</mat-option>
-              <mat-option value="pets">Pets</mat-option>
-            </mat-select>
-          </mat-form-field>
         </div>
-        <ng-container *ngIf="tasks.lowPriorityTasks.length > 0; else emptyTask">
-          <div class="priority-task__wrapper" cdkDropList>
-            <app-task cdkDrag *ngFor="let task of tasks.lowPriorityTasks" [taskData]="task"></app-task>
+        <ng-container *ngIf="tasks.length > 0 && tasks[tasks.length - 1].priority < 70; else emptyTask">
+          <div class="priority-task__wrapper">
+            <ng-container *ngFor="let task of tasks" >
+              <app-task *ngIf="task.priority < 70" [taskData]="task"></app-task>
+            </ng-container>
           </div>
         </ng-container>
         <ng-template class="priority-task__wrapper" #emptyTask>

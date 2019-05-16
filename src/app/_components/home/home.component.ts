@@ -1,7 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {AuthService} from "../../_providers/auth.service";
-import {TaskService} from "../../_providers/task.service";
+import {AuthService} from '../../_providers/auth.service';
+import {TaskService} from '../../_providers/task.service';
 import {timer} from 'rxjs';
+import {CdkDragDrop, moveItemInArray} from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,11 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.userName = this.authP.getUserName();
+    this.initEvents();
     this.fetchAllTask();
+  }
+
+  initEvents() {
     this.newTaskSubscription();
     this.deleteTaskSubscription();
     this.changeTaskEventSubscription();
@@ -29,13 +34,12 @@ export class HomeComponent implements OnInit {
   }
 
   newTaskSubscription() {
-    this.taskP.taskAddedEvent.subscribe(task => {
-      if (task.priority >= 70) {
-        this.tasks.priorityTasks.push(task);
-      } else {
-        if (task.category === this.previousCategory || this.previousCategory === undefined) {
-          this.tasks.lowPriorityTasks.push(task);
-        }
+    this.taskP.addEvent.subscribe(task => {
+      if (task.category === this.previousCategory || this.previousCategory === undefined) {
+        this.tasks.push(task);
+        this.tasks.sort((a, b) => {
+          return b.priority - a.priority;
+        });
       }
       this.sidenav.close();
     });
@@ -48,62 +52,44 @@ export class HomeComponent implements OnInit {
   }
 
   deleteTaskSubscription() {
-    this.taskP.taskDeletedEvent.subscribe(id => {
+    this.taskP.deletedEvent.subscribe(id => {
       timer(1200).subscribe(() => {
-        const updatepriorityTasks = [...this.tasks.priorityTasks];
-        const updatedTasks = [...this.tasks.lowPriorityTasks];
-        this.tasks.priorityTasks = updatepriorityTasks
-            .filter(task => {
-              return task._id !== id;
-            });
-        this.tasks.lowPriorityTasks = updatedTasks
-            .filter(task => {
-              return task._id !== id;
-            });
+        const updatedTasks = [...this.tasks];
+        this.tasks = updatedTasks
+          .filter(task => {
+            return task._id !== id;
+          });
       });
     });
   }
 
   updateTaskEvent() {
-    this.taskP.taskUpdateEvent.subscribe((task) => {
-      const updatePriorityTasks = [...this.tasks.priorityTasks];
-      const updatedTasks = [...this.tasks.lowPriorityTasks];
-      if (task.priority < 70) {
-        const targetIndex = updatedTasks.findIndex(item => {
-          return item._id === task._id;
-        });
-        updatedTasks[targetIndex] = task;
-        this.tasks.lowPriorityTasks = updatedTasks;
-      } else {
-        const targetIndex = updatePriorityTasks.findIndex(item => {
-          return item._id === task._id;
-        });
-        updatePriorityTasks[targetIndex] = task;
-        this.tasks.priorityTasks = updatePriorityTasks;
-      }
+    this.taskP.updateEvent.subscribe((task) => {
+      const targetIndex = this.tasks.findIndex(item => {
+        return item._id === task._id;
+      });
+      this.tasks[targetIndex] = task;
     });
   }
 
   changeTaskEventSubscription() {
-    this.taskP.taskChangeEvent.subscribe(() => {
+    this.taskP.formEditEvent.subscribe(() => {
       this.sidenav.open();
     });
   }
 
   categoryChange(category) {
     if (category === undefined && this.previousCategory === undefined) {
-      return
-    } else if (category === undefined) {
-      this.fetchAllTask();
+      return;
     } else {
       this.taskP.filterByCategory(category).subscribe(tasks => {
-        this.tasks.lowPriorityTasks = tasks;
+        this.tasks = tasks;
       });
     }
     this.previousCategory = category;
   }
 
-  drop(event) {
-    console.log(event);
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.tasks, event.previousIndex, event.currentIndex);
   }
 }
